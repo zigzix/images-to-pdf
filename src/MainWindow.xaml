@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImagesToPdf"
         mc:Ignorable="d"
-        Title="Images To PDF" Height="450" Width="800">
+        Title="Images To PDF - 1.0.0" Height="450" Width="800">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Padding" Value="4" />
@@ -14,7 +14,7 @@
     </Window.Resources>
     <DockPanel Margin="8">
         <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,8,0,0">
-            <Button Name="ButtonConvert" Content="Create PDF Files" Click="ButtonConvert_Click"/>
+            <Button Name="ButtonConvert" Content="Create PDFs" Click="ButtonConvert_Click"/>
         </WrapPanel>
         <GroupBox DockPanel.Dock="Bottom" 
                   Padding="4"
