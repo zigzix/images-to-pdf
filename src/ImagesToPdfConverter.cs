@@ -59,15 +59,23 @@ namespace ImagesToPdf
                 return Comparer<string>.Default.Compare(xFilename, yFilename);
             });
 
+            Rectangle rect = PageSize.A4;
+            iTextSharp.text.Image firstImage = iTextSharp.text.Image.GetInstance(_imageFilenames.First());
+            if (firstImage.Width > firstImage.Height)
+            {
+                rect = rect.Rotate();
+            }
+
             string outputFilename = Path.Combine(_outputFolder, _pdfFilename);
 
-            Document doc = new Document(PageSize.A4);
+            Document doc = new Document(rect);
             PdfWriter.GetInstance(doc, new FileStream(outputFilename, FileMode.Create));
             doc.Open();
             foreach (var imageFilename in _imageFilenames)
             {
                 iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(imageFilename);
-                image.ScaleToFit(PageSize.A4);
+                
+                image.ScaleToFit(rect);
                 image.SetAbsolutePosition(0, 0);
                 doc.Add(image);
                 doc.NewPage();
