@@ -1,5 +1,8 @@
-﻿using iTextSharp.text;
-using iTextSharp.text.pdf;
+﻿using iText.IO.Image;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +24,7 @@ namespace ImagesToPdf
         {
             foreach (var filename in imageFiles)
             {
-                if (_supportImages.Contains(Path.GetExtension(filename).ToLower()) == false)
+                if (_supportImages.Contains(System.IO.Path.GetExtension(filename).ToLower()) == false)
                     continue;
 
                 _imageFilenames.Add(filename);
@@ -34,7 +37,7 @@ namespace ImagesToPdf
         {
             foreach (var filename in Directory.EnumerateFiles(imagesFolder))
             {
-                if (_supportImages.Contains(Path.GetExtension(filename).ToLower()) == false)
+                if (_supportImages.Contains(System.IO.Path.GetExtension(filename).ToLower()) == false)
                     continue;
 
                 _imageFilenames.Add(filename);
@@ -59,26 +62,24 @@ namespace ImagesToPdf
                 return Comparer<string>.Default.Compare(xFilename, yFilename);
             });
 
-            Rectangle rect = PageSize.A4;
-            iTextSharp.text.Image firstImage = iTextSharp.text.Image.GetInstance(_imageFilenames.First());
-            if (firstImage.Width > firstImage.Height)
-            {
-                rect = rect.Rotate();
-            }
+            Image firstImage = new Image(ImageDataFactory.Create(_imageFilenames.First()));
+            PageSize pageSize = new PageSize(firstImage.GetImageWidth(), firstImage.GetImageHeight());
+            string outputFilename = System.IO.Path.Combine(_outputFolder, _pdfFilename);
 
-            string outputFilename = Path.Combine(_outputFolder, _pdfFilename);
-
-            Document doc = new Document(rect);
-            PdfWriter.GetInstance(doc, new FileStream(outputFilename, FileMode.Create));
-            doc.Open();
-            foreach (var imageFilename in _imageFilenames)
+            PdfWriter pdfWriter = new PdfWriter(outputFilename);
+            PdfDocument pdf = new PdfDocument(pdfWriter);
+            
+            Document doc = new Document(pdf, pageSize);
+            doc.SetMargins(0, 0, 0, 0);
+            
+            //doc.Open();
+            for (int i = 0; i < _imageFilenames.Count(); i++)
             {
-                iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(imageFilename);
-                
-                image.ScaleToFit(rect);
-                image.SetAbsolutePosition(0, 0);
+                pdf.AddNewPage(pageSize);
+
+                Image image = new Image(ImageDataFactory.Create(_imageFilenames[i]));
+                image.SetFixedPosition(i+1, 0, 0);
                 doc.Add(image);
-                doc.NewPage();
             }
             doc.Close();
         }
